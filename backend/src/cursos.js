@@ -1,11 +1,11 @@
 import express from "express";
 import connection from "./db_modules.js";
 
-const aprendiz = express.Router();
+const curso = express.Router();
 
-aprendiz.get("/aprendiz/listartodos", async (req, res) => {
+curso.get("/curso/listartodos", async (req, res) => {
     try {
-        const consulta = "select * from aprendices;";
+        const consulta = "select * from cursos;";
 
         const [resultado] = await connection.query(consulta);
 
@@ -21,12 +21,12 @@ aprendiz.get("/aprendiz/listartodos", async (req, res) => {
     }
 });
 
-aprendiz.get("/aprendiz/buscarid/:id/", async (req, res) => {
-    try {
-        let id = req.params.id;
-        console.log(id);
+curso.get("/curso/:id", async (req, res) => {
+    const id = req.params.id;
 
-        const consulta = `select * from aprendices where id = ?`;
+    try {
+        const consulta = "select * from cursos where id = ?;";
+
         const [resultado] = await connection.query(consulta, [id]);
 
         res.send({
@@ -41,18 +41,23 @@ aprendiz.get("/aprendiz/buscarid/:id/", async (req, res) => {
     }
 });
 
-aprendiz.post("/aprendiz/crear", async (req, res) => {
+curso.post("/curso/crear", async (req, res) => {
     try {
-        let payload = {
-            nombre: req.body.nombre,
-            apellido: req.body.apellido,
-            email: req.body.email,
-        };
 
-        console.log(payload);
+        const payload = req.body;
 
-        const consulta = "insert into aprendices set ?";
-        const [resultado] = await connection.query(consulta, payload);
+        const curso = {
+            nombre: payload.nombre,
+            fecha_inicio: payload.fecha_inicio,
+            fecha_fin: payload.fecha_fin,
+            estado: payload.estado
+        }
+
+        const consulta = "insert into cursos set ?";
+
+        const [resultado] = await connection.query(consulta, curso);
+
+
 
         res.send({
             status: 200,
@@ -66,18 +71,25 @@ aprendiz.post("/aprendiz/crear", async (req, res) => {
     }
 });
 
-aprendiz.put("/aprendiz/actualizar/:id", async (req, res) => {
+curso.put("/curso/actualizar/:id", async (req, res) => {
+    const id = req.params.id;
+
     try {
-        const id = req.params.id;
 
-        let payload = {
-            nombre: req.body.nombre,
-            apellido: req.body.apellido,
-            email: req.body.email,
-        };
+        const payload = req.body;
 
-        const consulta = "UPDATE aprendices SET ? WHERE id = ?";
-        const [resultado] = await connection.query(consulta, [payload, id]);
+        const curso = {
+            nombre: payload.nombre,
+            fecha_inicio: payload.fecha_inicio,
+            fecha_fin: payload.fecha_fin,
+            estado: payload.estado
+        }
+
+        const consulta = "update cursos set ? where id = ?";
+
+        const [resultado] = await connection.query(consulta, [curso, id]);
+
+
 
         res.send({
             status: 200,
@@ -91,11 +103,13 @@ aprendiz.put("/aprendiz/actualizar/:id", async (req, res) => {
     }
 });
 
-aprendiz.delete("/aprendiz/eliminar/:id", async (req, res) => {
-    try {
-        const id = req.params.id;
+curso.delete("/curso/eliminar/:id", async (req, res) => {
+    const id = req.params.id;
 
-        const consulta = "UPDATE aprendices SET estado = 0 WHERE id = ?";
+    try {
+
+        const consulta = "update cursos set estado = 0 where id = ?";
+
         const [resultado] = await connection.query(consulta, [id]);
 
         res.send({
@@ -109,5 +123,4 @@ aprendiz.delete("/aprendiz/eliminar/:id", async (req, res) => {
         });
     }
 });
-
-export default aprendiz;
+export default curso;

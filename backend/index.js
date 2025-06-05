@@ -1,14 +1,15 @@
 import express from "express";
+import aprendiz from "./src/aprendiz.js";
+import curso from "./src/cursos.js";
+import "dotenv/config";
 
 // Instanciamos la libreria express en la constante app
 // Heredamos todos los metodos de express
 const app = express();
+app.use(express.json());
 
-// Primer ruta
-
-app.get("/", (request, response) => {
-    response.send("Hola mundo");
-});
+app.use("/", aprendiz);
+app.use("/", curso);
 
 const puerto = 4000;
 app.listen(puerto, () => {
